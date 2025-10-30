@@ -23,7 +23,7 @@ pair_1_4_type = "dovetail";
 pair_2_5_type = "Lhook";
 
 /* [Preview Options] */
-show_grid = false;
+show_grid = true;
 show_measurements = true;  // Show debug measurement markers
 
 // --- tweakables for fit ---
@@ -269,7 +269,9 @@ module tile_at_axial(q, r) {
   xy = axial_to_xy(q, r, edge_len);
   col = random_color(q, r);
   color(col)
-    translate([xy[0], xy[1], 0]) tile3d();
+    // translate([xy[0], xy[1], 0]) tile3d();
+    translate([xy[0], xy[1], 0]) tile3d_through_orca();    
+    
 }
 
 // Preview: rectangular block in axial coords
@@ -281,6 +283,8 @@ module show_tile_grid_pointy() {
   for (r = [0:ROWS-1])
     for (q = [0:COLS-1])
       tile_at_axial(q, r);
+
+      echo("=====> show_tile_grid_pointy()");
 }
 
 // ============================================================
@@ -289,15 +293,22 @@ module show_tile_grid_pointy() {
 orca_svg      = "OrcaOpenSCAD_Plain.svg";
 orca_scale    = [0.75, 0.75];     // XY scale for the SVG
 orca_pos      = [0, 0];         // XY translation inside the tile
-inlay_depth   = 2.4;            // how deep the pocket is in the tileq
-insert_height = 2.4;            // how tall the separate orca insert is
-inlay_clear   = 0.20;           // XY clearance (mm) so insert fits the pocket
+inlay_depth   = 3.4;            // how deep the pocket is in the tileq
+insert_height = 3.4;            // how tall the separate orca insert is
+inlay_clear   = 0.10;           // XY clearance (mm) so insert fits the pocket
+
+orca_rot     = 0;            // degrees
+
+//fit_clear    = 0.20;         // clearance so the insert fits the cutout
+//insert_height= thickness;    // height for printed insert (adjust as you like)
+
 
 // 2D Orca outline from SVG (centered)
 module orca2d() {
   translate(orca_pos)
-    scale(orca_scale)
-      import(orca_svg, center=true, dpi=25.4);
+    rotate(orca_rot)
+      scale(orca_scale)
+        import(orca_svg, center=true, dpi=25.4);
 }
 
 
@@ -323,12 +334,22 @@ module tile_with_orca_pocket() {
   }
 }
 
-
+module tile3d_through_orca() {
+  difference() {
+    tile3d();  // your existing tile (with edge features)
+    // Cut completely through (add a tiny extra to guarantee the cut)
+    translate([0,0,-0.05])
+      linear_extrude(thickness + 0.1)
+        // make the cutout slightly larger for a slip fit
+        offset(delta = +fit_clear)
+          orca2d();
+  }
+}
 
 // ============================================================
 // RENDER
 // ============================================================
-/*
+
 if (show_grid) {
   show_tile_grid_pointy();
   if (show_measurements) {
@@ -340,11 +361,11 @@ if (show_grid) {
     show_debug_markers();
   }
 }
-*/
 
-// comment out the grid preview while exporting
-// show_tile_grid_pointy();
-tile_with_orca_pocket();
 
-color ("brown")
-orca_insert();
+////// comment out the grid preview while exporting
+////// show_tile_grid_pointy();
+////tile_with_orca_pocket();
+////
+////color ("brown")
+////orca_insert();
