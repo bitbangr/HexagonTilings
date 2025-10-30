@@ -1,0 +1,1 @@
+import("OrcaOpenSCAD_Plain.svg", center=true, scale=1.5);
