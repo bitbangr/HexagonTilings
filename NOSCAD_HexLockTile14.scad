@@ -16,7 +16,7 @@ pair_1_4 = true;      // Edges 1 & 4 (top-right & bottom-left)
 pair_2_5 = false;     // Edges 2 & 5 (top-left & bottom-right)
 
 /* [Preview Options] */
-show_grid = true;
+show_grid = false;
 show_measurements = true;  // Show debug measurement markers
 
 // ============================================================
@@ -325,3 +325,9 @@ if (show_grid) {
     show_debug_markers();
   }
 }
+
+color("orange")
+linear_extrude(height = 5)
+    scale([1.0, 1.0])
+        import("OrcaOpenSCAD_Plain.svg", center = true, dpi=25.4);
+//import("OrcaOpenSCAD_Plain.svg", center=true, scale=1.5);
