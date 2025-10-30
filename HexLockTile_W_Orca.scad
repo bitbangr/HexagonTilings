@@ -23,7 +23,7 @@ pair_1_4_type = "dovetail";
 pair_2_5_type = "Lhook";
 
 /* [Preview Options] */
-show_grid = true;
+show_grid = false;
 show_measurements = true;  // Show debug measurement markers
 
 // --- tweakables for fit ---
@@ -284,9 +284,51 @@ module show_tile_grid_pointy() {
 }
 
 // ============================================================
+// Orca Inlay Parameters
+// ============================================================
+orca_svg      = "OrcaOpenSCAD_Plain.svg";
+orca_scale    = [0.75, 0.75];     // XY scale for the SVG
+orca_pos      = [0, 0];         // XY translation inside the tile
+inlay_depth   = 2.4;            // how deep the pocket is in the tileq
+insert_height = 2.4;            // how tall the separate orca insert is
+inlay_clear   = 0.20;           // XY clearance (mm) so insert fits the pocket
+
+// 2D Orca outline from SVG (centered)
+module orca2d() {
+  translate(orca_pos)
+    scale(orca_scale)
+      import(orca_svg, center=true, dpi=25.4);
+}
+
+
+// Separate 3D Orca insert
+module orca_insert() {
+  // Slightly smaller XY (negative offset) so it slides into the pocket
+  linear_extrude(height = insert_height)
+    offset(delta = -inlay_clear)
+      orca2d();
+}
+
+// Tile with an Orca pocket cut into the top face
+module tile_with_orca_pocket() {
+  difference() {
+    // your existing 3D tile (with edge features)
+    tile3d();
+
+    // Cut the pocket down from the top by 'inlay_depth'
+    translate([0,0,thickness - inlay_depth])
+      linear_extrude(height = inlay_depth + 0.01)  // +ε to guarantee a clean cut
+        offset(delta = +inlay_clear)               // pocket a bit larger than insert
+          orca2d();
+  }
+}
+
+
+
+// ============================================================
 // RENDER
 // ============================================================
-
+/*
 if (show_grid) {
   show_tile_grid_pointy();
   if (show_measurements) {
@@ -298,3 +340,11 @@ if (show_grid) {
     show_debug_markers();
   }
 }
+*/
+
+// comment out the grid preview while exporting
+// show_tile_grid_pointy();
+tile_with_orca_pocket();
+
+color ("brown")
+orca_insert();
