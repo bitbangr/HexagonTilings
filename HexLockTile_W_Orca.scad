@@ -18,13 +18,13 @@ pair_2_5 = false;     // Edges 2 & 5 (top-left & bottom-right)
 
 // ---- choose feature types per opposite-edge pair ----
 // Valid types: "rect", "triangle", "dovetail", "hook", "Lhook"
-pair_0_3_type = "Lhook";     // A edge 0 tab, edge 3 slot
-pair_1_4_type = "Lhook";
+pair_0_3_type = "dovetail";     // A edge 0 tab, edge 3 slot
+pair_1_4_type = "dovetail";
 pair_2_5_type = "Lhook";
 
 /* [Preview Options] */
 show_grid = false;
-show_measurements = true;  // Show debug measurement markers
+show_measurements = false;  // Show debug measurement markers
 
 // --- tweakables for fit ---
 embed_eps  = 0.05;    // how far feature crosses into the hex (mm)
@@ -396,11 +396,20 @@ if (show_grid) {
 //}
     } else {
       // Single “unit” tile that shows nose/fin/tail cutouts from neighbors
-      tile3d_through_orca_unit();
+//      tile3d_through_orca_unit();
 
+    /*  
+      // --- for DXF export via projection ---
+    projection(cut = true)
+        tile3d_through_orca_unit();
+        */
+      
       // (Optional) comment out the next line; the single insert at origin
       // does not match the unit-tile fragments.
-      orca_insert();
+     // orca_insert();
+     
+     projection(cut = true)
+        orca_insert();
 
       if (show_measurements) show_debug_markers();
     }
