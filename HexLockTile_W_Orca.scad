@@ -270,7 +270,11 @@ module tile_at_axial(q, r) {
   col = random_color(q, r);
   color(col)
     // translate([xy[0], xy[1], 0]) tile3d();
-    translate([xy[0], xy[1], 0]) tile3d_through_orca();    
+    translate([xy[0], xy[1], 0]) tile3d_through_orca();  
+  
+   color(orca_insert_color)
+          translate([xy[0], xy[1], 0])
+            orca_insert();  
     
 }
 
@@ -296,6 +300,7 @@ orca_pos      = [0, 0];         // XY translation inside the tile
 inlay_depth   = 3.4;            // how deep the pocket is in the tileq
 insert_height = 3.4;            // how tall the separate orca insert is
 inlay_clear   = 0.10;           // XY clearance (mm) so insert fits the pocket
+orca_insert_colour = "orange";
 
 orca_rot     = 0;            // degrees
 
@@ -305,6 +310,7 @@ orca_rot     = 0;            // degrees
 
 // 2D Orca outline from SVG (centered)
 module orca2d() {
+//color(orca_insert_colour);
   translate(orca_pos)
     rotate(orca_rot)
       scale(orca_scale)
@@ -314,6 +320,7 @@ module orca2d() {
 
 // Separate 3D Orca insert
 module orca_insert() {
+color(orca_insert_colour)
   // Slightly smaller XY (negative offset) so it slides into the pocket
   linear_extrude(height = insert_height)
     offset(delta = -inlay_clear)
@@ -356,7 +363,8 @@ if (show_grid) {
     translate([0, 0, 0]) show_debug_markers();
   }
 } else {
-  tile3d();
+  tile3d_through_orca();
+  orca_insert();
   if (show_measurements) {
     show_debug_markers();
   }
