@@ -13,17 +13,17 @@ feat_depth = 4;       // Feature protrusion depth
 /* [Feature Enable Pairs] */
 pair_0_3 = true;      // Edges 0 & 3 (right & left)
 pair_1_4 = true;      // Edges 1 & 4 (top-right & bottom-left)
-pair_2_5 = true;     // Edges 2 & 5 (top-left & bottom-right)
+pair_2_5 = false;     // Edges 2 & 5 (top-left & bottom-right)
 
 
 // ---- choose feature types per opposite-edge pair ----
 // Valid types: "rect", "triangle", "dovetail", "hook", "Lhook"
-pair_0_3_type = "rect";     // A edge 0 tab, edge 3 slot
-pair_1_4_type = "dovetail";
+pair_0_3_type = "Lhook";     // A edge 0 tab, edge 3 slot
+pair_1_4_type = "Lhook";
 pair_2_5_type = "Lhook";
 
 /* [Preview Options] */
-show_grid = true;
+show_grid = false;
 show_measurements = true;  // Show debug measurement markers
 
 // --- tweakables for fit ---
@@ -270,7 +270,8 @@ module tile_at_axial(q, r) {
   col = random_color(q, r);
   color(col)
     // translate([xy[0], xy[1], 0]) tile3d();
-    translate([xy[0], xy[1], 0]) tile3d_through_orca();  
+    // translate([xy[0], xy[1], 0]) tile3d_through_orca();  
+    translate([xy[0], xy[1], 0]) tile3d_through_orca_unit();  
   
    color(orca_insert_color)
           translate([xy[0], xy[1], 0])
@@ -295,8 +296,8 @@ module show_tile_grid_pointy() {
 // Orca Inlay Parameters
 // ============================================================
 orca_svg      = "OrcaOpenSCAD_Plain.svg";
-orca_scale    = [0.75, 0.75];     // XY scale for the SVG
-orca_pos      = [0, 0];         // XY translation inside the tile
+orca_scale    = [1.0, 1.0];     // XY scale for the SVG
+orca_pos      = [15, 07];         // XY translation inside the tile
 inlay_depth   = 3.4;            // how deep the pocket is in the tileq
 insert_height = 3.4;            // how tall the separate orca insert is
 inlay_clear   = 0.10;           // XY clearance (mm) so insert fits the pocket
@@ -353,6 +354,30 @@ module tile3d_through_orca() {
   }
 }
 
+
+// Build the repeating Orca motif in THIS TILE'S local frame.
+// A small window of axial offsets (-1..1) is enough to capture neighbors.
+module repeating_orca_cutters_local(qmin=-1, qmax=1, rmin=-1, rmax=1) {
+  for (r = [rmin:rmax])
+    for (q = [qmin:qmax]) {
+      ctr = axial_to_xy(q, r, edge_len);   // neighbor tile center offset
+      translate(ctr)
+        orca2d();                          // your existing pose (translate->rotate->scale->import)
+    }
+}
+
+module tile3d_through_orca_unit() {
+  difference() {
+    tile3d();  // your existing tile with edge features
+    // subtract all nearby Orca repeats so fin/tail/nose show on this one tile
+    translate([0,0,-0.05])
+      linear_extrude(thickness + 0.1)
+        offset(delta = +fit_clear)
+          repeating_orca_cutters_local(-1, 1, -1, 1);
+  }
+}
+
+
 // ============================================================
 // RENDER
 // ============================================================
@@ -362,13 +387,24 @@ if (show_grid) {
   if (show_measurements) {
     translate([0, 0, 0]) show_debug_markers();
   }
-} else {
-  tile3d_through_orca();
-  orca_insert();
-  if (show_measurements) {
-    show_debug_markers();
-  }
-}
+//} else {
+//  tile3d_through_orca();
+//  orca_insert();
+//  if (show_measurements) {
+//    show_debug_markers();
+//  }
+//}
+    } else {
+      // Single “unit” tile that shows nose/fin/tail cutouts from neighbors
+      tile3d_through_orca_unit();
+
+      // (Optional) comment out the next line; the single insert at origin
+      // does not match the unit-tile fragments.
+      orca_insert();
+
+      if (show_measurements) show_debug_markers();
+    }
+
 
 
 ////// comment out the grid preview while exporting
