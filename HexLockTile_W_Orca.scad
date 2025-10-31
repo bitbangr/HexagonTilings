@@ -300,7 +300,7 @@ orca_pos      = [0, 0];         // XY translation inside the tile
 inlay_depth   = 3.4;            // how deep the pocket is in the tileq
 insert_height = 3.4;            // how tall the separate orca insert is
 inlay_clear   = 0.10;           // XY clearance (mm) so insert fits the pocket
-orca_insert_colour = "orange";
+orca_insert_color = "orange";
 
 orca_rot     = 0;            // degrees
 
@@ -320,7 +320,7 @@ module orca2d() {
 
 // Separate 3D Orca insert
 module orca_insert() {
-color(orca_insert_colour)
+color(orca_insert_color)
   // Slightly smaller XY (negative offset) so it slides into the pocket
   linear_extrude(height = insert_height)
     offset(delta = -inlay_clear)
