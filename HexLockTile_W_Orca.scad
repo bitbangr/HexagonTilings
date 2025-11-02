@@ -396,20 +396,19 @@ if (show_grid) {
 //}
     } else {
       // Single “unit” tile that shows nose/fin/tail cutouts from neighbors
-//      tile3d_through_orca_unit();
-
-    /*  
+      tile3d_through_orca_unit();
+      
       // --- for DXF export via projection ---
-    projection(cut = true)
-        tile3d_through_orca_unit();
-        */
+//    projection(cut = true)
+//        tile3d_through_orca_unit();
+//        
       
       // (Optional) comment out the next line; the single insert at origin
       // does not match the unit-tile fragments.
-     // orca_insert();
+      orca_insert();
      
-     projection(cut = true)
-        orca_insert();
+//     projection(cut = true)
+//        orca_insert();
 
       if (show_measurements) show_debug_markers();
     }

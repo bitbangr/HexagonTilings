@@ -12,3 +12,5 @@ github_pat_token
 .Trashes
 HexLockTile_W_Orca.json
 OrcaScaleTest.scad
+HexPlane.scad
+HexPlaneColor.scad
